@@ -10,13 +10,13 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:removeUnusedCss.removeUnusedCss"
+		"onCommand:removeUnusedStyle"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
 		"commands": [
 			{
-				"command": "removeUnusedCss.removeUnusedCss",
+				"command": "removeUnusedStyle",
 				"title": "remove unused css"
 			}
 		]
