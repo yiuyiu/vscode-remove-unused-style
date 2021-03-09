@@ -2,6 +2,7 @@ import { parse } from '@babel/parser';
 import { File, DECLARATION_TYPES, CallExpression, MemberExpression, Identifier, ObjectExpression, ObjectProperty } from '@babel/types';
 import generator from '@babel/generator';
 import { property } from "lodash";
+import * as vscode from 'vscode';
 import { ExtensionContext, commands, workspace, TextEditor, TextDocument, TextEditorEdit, Position, Range } from 'vscode';
 function findIfExist(text: string, symbol: string) {
     return text.indexOf(symbol) > -1;
@@ -11,19 +12,19 @@ function getStyleName(ast: File): { styleName: string, stylePropContainer: Objec
     let stylePropContainer: ObjectExpression | null = null;
     ast.program.body.forEach(item => {
         if (item.type === 'VariableDeclaration') {
-            item.declarations?.forEach(dec => {
-                if (dec.type === 'VariableDeclarator') {
-                    const init = dec.init as CallExpression;
-                    const callee = init?.callee as MemberExpression;
-                    const obj = callee?.object as Identifier;
-                    const property = callee?.property as Identifier;
-                    if (obj.name === 'StyleSheet' && property.name === 'create') {
-                        const id = dec.id as Identifier;
-                        styleName = id.name;
-                        const args = init.arguments as [ObjectExpression];
-                        stylePropContainer = args[0];
+            item?.declarations?.forEach(dec => {
+                    if (dec.type === 'VariableDeclarator') {
+                        const init = dec.init as CallExpression;
+                        const callee = init?.callee as MemberExpression;
+                        const obj = callee?.object as Identifier;
+                        const property = callee?.property as Identifier;
+                        if (obj?.name === 'StyleSheet' && property?.name === 'create') {
+                            const id = dec.id as Identifier;
+                            styleName = id?.name;
+                            const args = init?.arguments as [ObjectExpression];
+                            stylePropContainer = args?.[0];
+                        }
                     }
-                }
             });
         }
     });
@@ -56,13 +57,16 @@ function getToBeDeletedLineRange(stylePropContainer: ObjectExpression | null, st
 }
 function applyDelete(toBeDeleteLines: any, editor: TextEditor, document: TextDocument) {
     editor.edit(edit => {
+        let deleteLines = 0;
         toBeDeleteLines?.forEach((item: any) => {
             for (let i = item[0]; i <= item[1]; i++) {
                 // i range from 1, lineAt range from 0
                 const line = document.lineAt(i - 1);
                 edit.delete(line.rangeIncludingLineBreak);
+                deleteLines++;
             }
         });
+        vscode.window.showInformationMessage(`delete ${deleteLines} lines^_^!`);
     });
 }
 export default function removeUnusedStyle(editor: TextEditor, edit: TextEditorEdit): void {
@@ -70,7 +74,7 @@ export default function removeUnusedStyle(editor: TextEditor, edit: TextEditorEd
     const text = document.getText();
     const ast = parse(text, {
         sourceType: "unambiguous",
-        plugins: ["jsx"]
+        plugins: ["jsx", "classProperties"]
     });
     const { styleName, stylePropContainer } = getStyleName(ast);
     applyDelete(getToBeDeletedLineRange(stylePropContainer, styleName, text), editor,
