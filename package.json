@@ -1,11 +1,17 @@
 {
-	"name": "remove-unused-css",
-	"displayName": "remove Unused css",
-	"description": "LEAVE BLANK",
+	"name": "remove-unused-style",
+	"displayName": "remove unused style",
+	"description": "An extension to remove unused style in react-native",
 	"version": "0.0.1",
+	"publisher": "xixi",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/yiuyiu/vscode-remove-unused-style"
+	},
 	"engines": {
 		"vscode": "^1.53.0"
 	},
+	"icon": "images/kumamon.jpg",
 	"categories": [
 		"Other"
 	],
@@ -17,7 +23,7 @@
 		"commands": [
 			{
 				"command": "removeUnusedStyle",
-				"title": "remove unused css"
+				"title": "remove unused style"
 			}
 		]
 	},
