@@ -2,7 +2,7 @@
 	"name": "remove-unused-style",
 	"displayName": "remove unused style",
 	"description": "An extension to remove unused style in react-native",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"publisher": "xixi",
 	"repository": {
 		"type": "git",
